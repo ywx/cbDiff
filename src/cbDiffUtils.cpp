@@ -9,6 +9,7 @@
 #include <editorcolourset.h>
 
 #include <wx/mstream.h>
+#include <wx/image.h>
 
 namespace cbDiffUtils
 {
