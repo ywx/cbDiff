@@ -57,7 +57,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-mthreads" />
-					<Add option="-enable-auto-import" />
+					<Add option="--enable-auto-import" />
 					<Add library="codeblocks" />
 					<Add library="wxmsw28u" />
 					<Add library="wxscintilla_cb" />
