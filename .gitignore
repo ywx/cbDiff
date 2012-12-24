@@ -6,6 +6,5 @@
 *.layout
 # Ignore objects and archives.
 .objs
-bin
 *.[oa]
 *.obj
