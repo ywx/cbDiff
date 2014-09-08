@@ -53,6 +53,23 @@ cbDiff::~cbDiff()
 
 void cbDiff::OnAttach()
 {
+    wxCmdLineParser& parser = *Manager::GetCmdLineParser();
+    parser.AddOption( _T("diff1"), _T("diff1"),_T("first file to compare"));
+    parser.AddOption( _T("diff2"), _T("diff2"),_T("second file to compare"));
+
+    Manager::Get()->RegisterEventSink(cbEVT_APP_STARTUP_DONE, new cbEventFunctor<cbDiff, CodeBlocksEvent>(this, &cbDiff::OnAppDoneStartup));
+    Manager::Get()->RegisterEventSink(cbEVT_APP_CMDLINE,      new cbEventFunctor<cbDiff, CodeBlocksEvent>(this, &cbDiff::OnAppCmdLine));
+}
+
+void cbDiff::OnAppDoneStartup(CodeBlocksEvent& event)
+{
+    EvalCmdLine();
+    event.Skip();
+}
+void cbDiff::OnAppCmdLine(CodeBlocksEvent& event)
+{
+    EvalCmdLine();
+    event.Skip();
 }
 
 void cbDiff::OnRelease(bool appShutDown)
@@ -161,3 +178,18 @@ void cbDiff::OnDiff(wxCommandEvent& event)
                          sdf.GetHighlightLanguage());
     }
 }
+
+void cbDiff::EvalCmdLine()
+{
+    wxString file1, file2;
+    wxCmdLineParser& parser = *Manager::GetCmdLineParser();
+
+    if ( parser.Found(_T("diff1"), &file1) && parser.Found(_T("diff2"), &file2 ) )
+    {
+        if ( wxFile::Exists(file1) && wxFile::Exists(file2) )
+        {
+            new cbDiffEditor(file1, file2, cbDiffEditor::SIDEBYSIDE);
+        }
+    }
+}
+

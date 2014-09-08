@@ -113,6 +113,9 @@ class cbDiff : public cbPlugin
         virtual void OnRelease(bool appShutDown);
 
         void OnDiff(wxCommandEvent& event);
+        void OnAppDoneStartup(CodeBlocksEvent& event);
+        void OnAppCmdLine(CodeBlocksEvent& event);
+        void EvalCmdLine();
     private:
         DECLARE_EVENT_TABLE();
 };
