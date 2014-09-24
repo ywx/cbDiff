@@ -22,7 +22,6 @@ public:
     }
     virtual ~cbDiffCtrl() { wxDELETE(m_theme); }
     virtual void Init(cbDiffColors colset) = 0;
-    virtual void SetHlang(wxString lang) = 0;
     virtual void ShowDiff(wxDiff diff) = 0;
 protected:
     EditorColourSet* m_theme;

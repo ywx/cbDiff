@@ -11,7 +11,6 @@ public:
     cbTableCtrl(wxWindow* parent);
     virtual ~cbTableCtrl();
     virtual void Init(cbDiffColors colset);
-    virtual void SetHlang(wxString lang);
     virtual void ShowDiff(wxDiff diff);
 private:
     cbStyledTextCtrl* m_txtctrl;

@@ -12,7 +12,7 @@ class cbConfigurationPanel;
     #define EXPORT_FFP WXIMPORT
 #endif
 
-extern "C" EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode, wxString hlang);
+extern "C" EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode);
 
 class cbDiff : public cbPlugin
 {

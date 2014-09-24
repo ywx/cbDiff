@@ -28,8 +28,6 @@ class cbDiffSelectFiles: public wxDialog
         wxString GetToFile();
 
         int GetViewingMode();
-
-        wxString GetHighlightLanguage();
 	protected:
 	private:
         //(*Declarations(cbDiffSelectFiles)
@@ -39,7 +37,6 @@ class cbDiffSelectFiles: public wxDialog
         wxTextCtrl* TCToFile;
         wxButton* BSelectFrom;
         wxFileDialog* SelectFile;
-        wxChoice* CHHLang;
         //*)
 
         //(*Identifiers(cbDiffSelectFiles)
@@ -48,17 +45,13 @@ class cbDiffSelectFiles: public wxDialog
         static const long ID_TCTO;
         static const long ID_BSTO;
         static const long ID_RADIOBOX1;
-        static const long ID_CHOICE1;
         //*)
 
 		//(*Handlers(cbDiffSelectFiles)
 		void OnSelectTo(wxCommandEvent& event);
 		void OnSelectFrom(wxCommandEvent& event);
-		void OnRadioBox(wxCommandEvent& event);
-		void OnHLangChange(wxCommandEvent& event);
 		//*)
 
-        wxString m_lasthlang;
         DECLARE_EVENT_TABLE()
 };
 

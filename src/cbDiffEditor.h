@@ -32,8 +32,7 @@ public:
 
     cbDiffEditor(const wxString& firstfile,
                  const wxString& secondfile,
-                 int diffmode = DEFAULT,
-                 wxString hlang = wxEmptyString);
+                 int diffmode = DEFAULT);
 
     virtual ~cbDiffEditor();
 
@@ -53,8 +52,6 @@ public:
     int GetMode();
 
     void SetMode(int mode);
-
-    void SetHlang(wxString lang);
 
     enum
     {

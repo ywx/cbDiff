@@ -73,24 +73,6 @@ namespace cbDiffUtils
         return NULL;
     }
 
-    wxArrayString GetAllHighlightLanguages()
-    {
-        static wxArrayString langs;
-        // Get them once, as they shouldn't change during App run
-        if(langs.GetCount() == 0)
-        {
-            EditorColourSet *theme =
-            new EditorColourSet(Manager::Get()->GetConfigManager(_T("editor"))->
-                                Read(_T("/colour_sets/active_colour_set"),
-                                COLORSET_DEFAULT));
-            if (theme)
-                langs = theme->GetAllHighlightLanguages();
-            langs.Insert(_("Plain Text"), 0);
-            wxDELETE(theme);
-        }
-        return langs;
-    }
-
     wxBitmap _wxGetBitmapFromMemory(const unsigned char *data, int length)
     {
        wxMemoryInputStream is(data, length);

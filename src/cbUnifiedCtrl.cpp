@@ -31,11 +31,6 @@ void cbUnifiedCtrl::Init(cbDiffColors colset)
     m_theme->Apply(_T("DiffPatch"), m_txtctrl);
 }
 
-void cbUnifiedCtrl::SetHlang(wxString lang)
-{
-    // Nothing todo, because the highlight language is always DiffPatch
-}
-
 void cbUnifiedCtrl::ShowDiff(wxDiff diff)
 {
     m_txtctrl->SetReadOnly(false);

@@ -24,10 +24,9 @@ namespace
 /// Function for other plugins
 EXPORT_FFP void DiffFiles(const wxString& firstfile,
                           const wxString& secondfile,
-                          int viewmode,
-                          wxString hlang)
+                          int viewmode)
 {
-    new cbDiffEditor(firstfile, secondfile, viewmode, hlang);
+    new cbDiffEditor(firstfile, secondfile, viewmode);
 }
 
 // events handling
@@ -174,8 +173,7 @@ void cbDiff::OnDiff(wxCommandEvent& event)
     {
         new cbDiffEditor(sdf.GetFromFile(),
                          sdf.GetToFile(),
-                         sdf.GetViewingMode(),
-                         sdf.GetHighlightLanguage());
+                         sdf.GetViewingMode());
     }
 }
 

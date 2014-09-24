@@ -92,8 +92,6 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
 	RBViewing->SetSelection(0);
 	StaticBoxSizer4->Add(RBViewing, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer5 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Language:"));
-	CHHLang = new wxChoice(this, ID_CHOICE2, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE2"));
-	StaticBoxSizer5->Add(CHHLang, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer4->Add(StaticBoxSizer5, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	BoxSizer1->Add(StaticBoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	SetSizer(BoxSizer1);
@@ -103,15 +101,11 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&cbDiffConfigPanel::OnColAddClick);
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&cbDiffConfigPanel::OnColRemClick);
 	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&cbDiffConfigPanel::OnColCarClick);
-	Connect(ID_RADIOBOX1,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&cbDiffConfigPanel::OnViewModeChange);
-	Connect(ID_CHOICE2,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&cbDiffConfigPanel::OnHLangChange);
 	//*)
     BColAdd->SetBackgroundColour(wxColour(0,255,0,50));
     BColRem->SetBackgroundColour(wxColour(255,0,0,50));
     CHCaret->SetSelection(0);
 	BColCar->SetBackgroundColour(wxColour(122,122,0));
-
-    CHHLang->Append(cbDiffUtils::GetAllHighlightLanguages());
 
     ConfigManager *cfg = Manager::Get()->GetConfigManager(_T("cbdiffsettings"));
     if (cfg)
@@ -124,9 +118,6 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
         BColCar->SetBackgroundColour(cfg->ReadColour(_T("caretline"), wxColor(122,122,0)));
         SLCarAlpha->SetValue(cfg->ReadInt(_T("caretlinealpha"), 50));
         RBViewing->SetSelection(cfg->ReadInt(_T("viewmode"), 0));
-        if(RBViewing->GetSelection() == 1)
-            CHHLang->Enable(false);
-        CHHLang->SetStringSelection(cfg->Read(_T("hlang"), _("Plain Text")));
     }
 
     BColAdd->SetLabel(BColAdd->GetBackgroundColour().GetAsString());
@@ -166,7 +157,6 @@ void cbDiffConfigPanel::OnApply()
         cfg->Write(_T("caretline"), BColCar->GetBackgroundColour());
         cfg->Write(_T("caretlinealpha"), SLCarAlpha->GetValue());
         cfg->Write(_T("viewmode"), RBViewing->GetSelection());
-        cfg->Write(_T("hlang"), CHHLang->GetStringSelection());
     }
 }
 
@@ -210,24 +200,4 @@ void cbDiffConfigPanel::OnColCarClick(wxCommandEvent& event)
         BColCar->SetBackgroundColour(dialog.GetColourData().GetColour());
         BColCar->SetLabel(dialog.GetColourData().GetColour().GetAsString());
     }
-}
-
-void cbDiffConfigPanel::OnViewModeChange(wxCommandEvent& event)
-{
-    if(RBViewing->GetSelection() == 1)
-    {
-        m_lasthlang = CHHLang->GetStringSelection();
-        CHHLang->SetStringSelection(_("Diff/Patch"));
-        CHHLang->Disable();
-    }
-    else
-    {
-        CHHLang->Enable();
-        CHHLang->SetStringSelection(m_lasthlang);
-    }
-}
-
-void cbDiffConfigPanel::OnHLangChange(wxCommandEvent& event)
-{
-    m_lasthlang = event.GetString();
 }
