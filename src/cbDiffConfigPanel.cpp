@@ -40,7 +40,6 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
 {
 	//(*Initialize(cbDiffConfigPanel)
 	wxStaticBoxSizer* StaticBoxSizer2;
-	wxStaticBoxSizer* StaticBoxSizer5;
 	wxBoxSizer* BoxSizer2;
 	wxStaticText* StaticText1;
 	wxStaticBoxSizer* StaticBoxSizer3;
@@ -91,8 +90,6 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
 	RBViewing = new wxRadioBox(this, ID_RADIOBOX1, _("Displaytype:"), wxDefaultPosition, wxDefaultSize, 3, __wxRadioBoxChoices_1, 1, wxRA_VERTICAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
 	RBViewing->SetSelection(0);
 	StaticBoxSizer4->Add(RBViewing, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer5 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Language:"));
-	StaticBoxSizer4->Add(StaticBoxSizer5, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	BoxSizer1->Add(StaticBoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	SetSizer(BoxSizer1);
 	BoxSizer1->Fit(this);
