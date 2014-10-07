@@ -2,9 +2,9 @@
 Summary
 ==================
 
-cbDiff is a plugin for Code::Blocks IDE, 
+cbDiff is a plugin for Code::Blocks IDE,
 which can show visually the difference
-between two files. 
+between two files.
 
 ==================
 License
@@ -37,16 +37,14 @@ if(Manager::Get()->GetPluginManager()->FindPluginByName(_T("cbDiff")) != NULL)
 	// is library loaded
 	if(element->library->IsLoaded())
 	{
-	    typedef void (*cbDiffFunc) (const wxString&, const wxString&, int mode,  const wxString&);
+	    typedef void (*cbDiffFunc) (const wxString&, const wxString&, int viewmode);
 
 	    cbDiffFunc difffunc = (cbDiffFunc)element->library->GetSymbol(_("DiffFiles"));
 	    if(difffunc != NULL)
 		{
-			// Call the function with the two files, 
-			// the viewing mode (TABLE, UNIFIED or SIDEBYSIDE) and the Highlightlanguage
-			difffunc(firstfile, secondfile, viewmode, hlang);
+			difffunc(firstfile, secondfile, -1);
 	    }
 	}
 }
-        
+
 
