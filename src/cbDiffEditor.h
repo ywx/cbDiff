@@ -56,7 +56,7 @@ public:
     enum
     {
         DEFAULT = -1,
-        TABLE = wxID_HIGHEST+125,
+        TABLE = 0,
         UNIFIED,
         SIDEBYSIDE
     };

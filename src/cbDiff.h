@@ -116,6 +116,10 @@ class cbDiff : public cbPlugin
         void OnAppDoneStartup(CodeBlocksEvent& event);
         void OnAppCmdLine(CodeBlocksEvent& event);
         void EvalCmdLine();
+        bool m_prevSelectionValid;
+        wxString m_prevFileName;
+        std::vector<long> MenuIds;
+
     private:
         DECLARE_EVENT_TABLE();
 };

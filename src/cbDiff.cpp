@@ -52,12 +52,15 @@ cbDiff::~cbDiff()
 
 void cbDiff::OnAttach()
 {
+    m_prevSelectionValid = false;
+    wxString m_prevFileName = wxEmptyString;
+
     wxCmdLineParser& parser = *Manager::GetCmdLineParser();
     parser.AddOption( _T("diff1"), _T("diff1"),_T("first file to compare"));
     parser.AddOption( _T("diff2"), _T("diff2"),_T("second file to compare"));
 
     Manager::Get()->RegisterEventSink(cbEVT_APP_STARTUP_DONE, new cbEventFunctor<cbDiff, CodeBlocksEvent>(this, &cbDiff::OnAppDoneStartup));
-    Manager::Get()->RegisterEventSink(cbEVT_APP_CMDLINE,      new cbEventFunctor<cbDiff, CodeBlocksEvent>(this, &cbDiff::OnAppCmdLine));
+    Manager::Get()->RegisterEventSink(cbEVT_APP_CMDLINE, new cbEventFunctor<cbDiff, CodeBlocksEvent>(this, &cbDiff::OnAppCmdLine));
 }
 
 void cbDiff::OnAppDoneStartup(CodeBlocksEvent& event)
@@ -139,24 +142,34 @@ void cbDiff::BuildMenu(wxMenuBar* menuBar)
                      _("Shows the differences between two files"));
 }
 
-void cbDiff::BuildModuleMenu(const ModuleType type,
-                             wxMenu* menu,
-                             const FileTreeData* data)
+void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu* menu, const FileTreeData* data)
 {
-    if(type == mtProjectManager && data != 0 &&
-       data->GetKind() == FileTreeData::ftdkFile)
+    if ( type == mtProjectManager && data != 0 && data->GetKind() == FileTreeData::ftdkFile )
     {
-        menu->AppendSubMenu(new cbDiffMenu(this,
-                                data->GetProjectFile()->file.GetFullPath()),
-                            _("Diff with"));
+        wxMenu *diffmenu = new cbDiffMenu(this, data->GetProjectFile()->file.GetFullPath(), m_prevSelectionValid, m_prevFileName, MenuIds);
+        menu->AppendSubMenu(diffmenu, _("Diff with"));
     }
-    else if(type == mtEditorManager &&
-            Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor())
+    else if ( type == mtEditorManager && Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor() )
     {
-        menu->AppendSubMenu(new cbDiffMenu(this,
-                                           Manager::Get()->GetEditorManager()->
-                                GetBuiltinActiveEditor()->GetFilename()),
-                            _("Diff with"));
+        wxString filename = Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor()->GetFilename();
+        wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, MenuIds);
+        menu->AppendSubMenu(diffmenu, _("Diff with"));
+    }
+    else if ( type == mtEditorTab )
+    {
+        wxString filename = Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor()->GetFilename();
+        wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, MenuIds);
+        menu->AppendSubMenu(diffmenu, _("Diff with"));
+    }
+    else if ( type == mtUnknown ) // assuming FileExplorer
+    {
+        if ( data && (data->GetKind() == FileTreeData::ftdkFile) )
+        {
+            wxFileName f(data->GetFolder());
+            wxString filename=f.GetFullPath();
+            wxString name=f.GetFullName();
+            menu->AppendSubMenu(new cbDiffMenu(this, name, m_prevSelectionValid, m_prevFileName, MenuIds), _("Diff with"));
+	    }
     }
 }
 

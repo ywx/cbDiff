@@ -14,46 +14,87 @@
 
 using namespace cbDiffUtils;
 
+namespace
+{
+    const long ID_SELECT_FIRST = wxNewId();
+    const long ID_SELECT_SECOND = wxNewId();
+    const long ID_SELECT_LOCAL = wxNewId();
+}
+
+
 BEGIN_EVENT_TABLE(cbDiffMenu, wxMenu)
 END_EVENT_TABLE()
 
-cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile) : wxMenu()
+cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelectionValid, wxString &prevFileName, std::vector<long> &ids):
+    wxMenu(),
+    m_basefile(basefile),
+    m_ids(ids),
+    m_prevValid(prevSelectionValid),
+    m_prevFileName(prevFileName)
 {
-    m_basefile = basefile;
-    m_localid = IDSTART;
+    if(m_prevValid == false)
+    {
+        Append(ID_SELECT_FIRST, _("Compare to"));
+
+        parent->Connect(ID_SELECT_FIRST, wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&cbDiffMenu::OnSelectFirst, NULL, this);
+    }
+    else
+    {
+        Append(ID_SELECT_SECOND, _("Compare"));
+        Append(ID_SELECT_FIRST, _("Reselect first"));
+
+        parent->Connect(ID_SELECT_SECOND, wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&cbDiffMenu::OnSelectSecond, NULL, this);
+        parent->Connect(ID_SELECT_FIRST, wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&cbDiffMenu::OnSelectFirst, NULL, this);
+    }
 
     // the project or NULL
     ProjectFile* file = IsFileInActiveProject(basefile);
-    wxArrayString shortnames = GetActiveProjectFilesRelative(file);
     m_projectfilenames = GetActiveProjectFilesAbsolute(file);
+    m_openfilenames = cbDiffUtils::GetOpenFilesLong(basefile);
+
+    unsigned int projectFiles = m_projectfilenames.GetCount();
+    unsigned int openFiles = m_openfilenames.GetCount();
+
+    wxArrayString shortnames = GetActiveProjectFilesRelative(file);
+
+
+
+    while (m_ids.size() < projectFiles + openFiles)
+            m_ids.push_back(wxNewId());
 
     // project open?
-    if(shortnames.GetCount())
+    if(projectFiles)
     {
         wxMenu* projmenu = new wxMenu();
-        for(unsigned int i = 0; i < shortnames.GetCount(); i++, m_localid++)
-            projmenu->Append(m_localid, shortnames[i]);
+        for(unsigned int i = 0; i < shortnames.GetCount(); ++i)
+        {
+            projmenu->Append(m_ids[i], shortnames[i]);
+            parent->Connect(m_ids[i],wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&cbDiffMenu::OnSelectProject, NULL, this);
+        }
         AppendSubMenu(projmenu, _("Project files"));
     }
 
-    shortnames = cbDiffUtils::GetOpenFilesShort(basefile);
-    m_openfilenames = cbDiffUtils::GetOpenFilesLong(basefile);
 
+    shortnames = cbDiffUtils::GetOpenFilesShort(basefile);
     // files open?
-    if(shortnames.GetCount())
+    if(openFiles)
     {
         wxMenu* openmenu = new wxMenu();
-        for(unsigned int i = 0; i < shortnames.GetCount(); i++, m_localid++)
-            openmenu->Append(m_localid, shortnames[i]);
+        for(unsigned int i = 0; i < openFiles; i++)
+        {
+            openmenu->Append(m_ids[i+projectFiles], shortnames[i]);
+            parent->Connect(m_ids[i+projectFiles],wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&cbDiffMenu::OnSelectOpen, NULL, this);
+        }
         AppendSubMenu(openmenu, _("Open files"));
     }
 
-    Append(m_localid, _("Local file..."));
 
-    // On MSW the only way to get our events is to catch all events
-    // so we use this "global" connect and then we look if the event is for us
-    parent->Connect(wxEVT_COMMAND_MENU_SELECTED,
-                          (wxObjectEventFunction)&cbDiffMenu::OnSelect, NULL, this);
+
+
+    Append(ID_SELECT_LOCAL, _("Local file..."));
+    parent->Connect(ID_SELECT_LOCAL, wxEVT_COMMAND_MENU_SELECTED,
+                          (wxObjectEventFunction)&cbDiffMenu::OnSelectLocal, NULL, this);
+
 }
 
 cbDiffMenu::~cbDiffMenu()
@@ -62,43 +103,55 @@ cbDiffMenu::~cbDiffMenu()
     Destroy(FindItem(_("Open files")));
 }
 
-void cbDiffMenu::OnSelect(wxCommandEvent& event)
+void cbDiffMenu::OnSelectOpen(wxCommandEvent& event)
 {
-	if(event.GetId() < IDSTART || event.GetId() > m_localid)
-        return event.Skip();
 
+}
+
+void cbDiffMenu::OnSelectProject(wxCommandEvent& event)
+{
     if(!wxFileExists(m_basefile))
         return;
 
-    // want to select a local file
-    if(event.GetId() == m_localid)
+    unsigned int idx = 0;
+    std::vector<long>::iterator it;
+    for( it = m_ids.begin() ; it < m_ids.end(); ++it )
     {
-        wxFileDialog selfile(Manager::Get()->GetAppWindow(), _("Select file"),
-                             wxEmptyString, wxEmptyString,
-                             wxFileSelectorDefaultWildcardStr,
-                             wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_PREVIEW);
-        if(selfile.ShowModal() == wxID_OK)
-            new cbDiffEditor(m_basefile, selfile.GetPath());
+        if (*it == event.GetId())
+            break;
+    }
+    if ( it == m_ids.end() ) return;
+
+    if(idx < m_projectfilenames.GetCount() && wxFileExists(m_projectfilenames[idx]))
+        new cbDiffEditor(m_basefile, m_projectfilenames[idx]);
+}
+
+void cbDiffMenu::OnSelectLocal(wxCommandEvent& event)
+{
+    if(!wxFileExists(m_basefile))
         return;
-    }
 
-    // helpers to differentiate between project and openfiles menuids
-    int realid = event.GetId() - IDSTART;
-    int idbreak = m_projectfilenames.GetCount();
-    int realopenid = realid - idbreak;
+    wxFileDialog selfile(Manager::Get()->GetAppWindow(), _("Select file"),
+                         wxEmptyString, wxEmptyString,
+                         wxFileSelectorDefaultWildcardStr,
+                         wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_PREVIEW);
 
-    // projectfile selected
-    if(realid < idbreak &&
-       wxFileExists(m_projectfilenames[realid]))
+    if(selfile.ShowModal() == wxID_OK)
+        new cbDiffEditor(m_basefile, selfile.GetPath());
+}
+
+void cbDiffMenu::OnSelectFirst(wxCommandEvent& event)
+{
+    m_prevFileName = m_basefile;
+    m_prevValid = true;
+
+}
+
+void cbDiffMenu::OnSelectSecond(wxCommandEvent& event)
+{
+    if ( m_prevValid )
     {
-        new cbDiffEditor(m_basefile,
-                         m_projectfilenames[realid]);
+        new cbDiffEditor(m_prevFileName, m_basefile);
     }
-    // openfile selected
-    else if(realid >= idbreak &&
-            wxFileExists(m_openfilenames[realopenid]))
-    {
-        new cbDiffEditor(m_basefile,
-                         m_openfilenames[realopenid]);
-    }
+    m_prevValid = false;
 }
