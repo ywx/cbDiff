@@ -155,7 +155,7 @@ void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu* menu, const FileTree
         wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, MenuIds);
         menu->AppendSubMenu(diffmenu, _("Diff with"));
     }
-    else if ( type == mtEditorTab )
+    else if ( type == mtEditorTab && Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor() )
     {
         wxString filename = Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor()->GetFilename();
         wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, MenuIds);
