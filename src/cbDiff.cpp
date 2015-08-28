@@ -146,8 +146,12 @@ void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu* menu, const FileTree
 {
     if ( type == mtProjectManager && data != 0 && data->GetKind() == FileTreeData::ftdkFile )
     {
-        wxMenu *diffmenu = new cbDiffMenu(this, data->GetProjectFile()->file.GetFullPath(), m_prevSelectionValid, m_prevFileName, MenuIds);
-        menu->AppendSubMenu(diffmenu, _("Diff with"));
+        ProjectFile *prjFile = data->GetProjectFile();
+        if( prjFile )
+        {
+            wxMenu *diffmenu = new cbDiffMenu(this, prjFile->file.GetFullPath(), m_prevSelectionValid, m_prevFileName, MenuIds);
+            menu->AppendSubMenu(diffmenu, _("Diff with"));
+        }
     }
     else if ( type == mtEditorManager && Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor() )
     {
