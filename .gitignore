@@ -6,6 +6,13 @@
 *.layout
 # Ignore objects and archives.
 .objs
-bin
 *.[oa]
 *.obj
+# Ignore build
+bin
+# Ignore backup file.
+*.bak
+*.origin
+*.orig
+*.org
+*.old
