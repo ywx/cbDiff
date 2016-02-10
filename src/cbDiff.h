@@ -12,7 +12,7 @@ class cbConfigurationPanel;
     #define EXPORT_FFP WXIMPORT
 #endif
 
-extern "C" EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode, wxString hlang);
+extern "C" EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode);
 
 class cbDiff : public cbPlugin
 {
@@ -113,6 +113,13 @@ class cbDiff : public cbPlugin
         virtual void OnRelease(bool appShutDown);
 
         void OnDiff(wxCommandEvent& event);
+        void OnAppDoneStartup(CodeBlocksEvent& event);
+        void OnAppCmdLine(CodeBlocksEvent& event);
+        void EvalCmdLine();
+        bool m_prevSelectionValid;
+        wxString m_prevFileName;
+        std::vector<long> MenuIds;
+
     private:
         DECLARE_EVENT_TABLE();
 };

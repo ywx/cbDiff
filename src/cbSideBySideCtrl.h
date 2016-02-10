@@ -12,7 +12,6 @@ public:
     cbSideBySideCtrl(wxWindow* parent);
     virtual ~cbSideBySideCtrl();
     virtual void Init(cbDiffColors colset);
-    virtual void SetHlang(wxString lang);
     virtual void ShowDiff(wxDiff diff);
     void Synchronize();
 private:

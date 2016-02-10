@@ -41,7 +41,6 @@ class cbDiffConfigPanel: public cbConfigurationPanel
 		wxSlider* SLRemAlpha;
 		wxButton* BColAdd;
 		wxButton* BColCar;
-		wxChoice* CHHLang;
 		//*)
 
 		//(*Identifiers(cbDiffConfigPanel)
@@ -63,11 +62,8 @@ class cbDiffConfigPanel: public cbConfigurationPanel
 		void OnColAddClick(wxCommandEvent& event);
 		void OnColRemClick(wxCommandEvent& event);
 		void OnColCarClick(wxCommandEvent& event);
-		void OnViewModeChange(wxCommandEvent& event);
-		void OnHLangChange(wxCommandEvent& event);
 		//*)
 
-        wxString m_lasthlang;
 		DECLARE_EVENT_TABLE()
 };
 

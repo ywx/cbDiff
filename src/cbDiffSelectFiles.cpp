@@ -29,13 +29,11 @@ const long cbDiffSelectFiles::ID_BSFROM = wxNewId();
 const long cbDiffSelectFiles::ID_TCTO = wxNewId();
 const long cbDiffSelectFiles::ID_BSTO = wxNewId();
 const long cbDiffSelectFiles::ID_RADIOBOX1 = wxNewId();
-const long cbDiffSelectFiles::ID_CHOICE1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(cbDiffSelectFiles,wxDialog)
 	//(*EventTable(cbDiffSelectFiles)
 	//*)
-	EVT_RADIOBOX(ID_RADIOBOX1, cbDiffSelectFiles::OnRadioBox)
 END_EVENT_TABLE()
 
 cbDiffSelectFiles::cbDiffSelectFiles(wxWindow* parent,wxWindowID id)
@@ -44,7 +42,6 @@ cbDiffSelectFiles::cbDiffSelectFiles(wxWindow* parent,wxWindowID id)
 	wxStaticBoxSizer* StaticBoxSizer2;
 	wxBoxSizer* BoxSizer2;
 	wxStaticBoxSizer* StaticBoxSizer3;
-	wxStaticBoxSizer* StaticBoxSizer4;
 	wxBoxSizer* BoxSizer1;
 	wxStdDialogButtonSizer* StdDialogButtonSizer1;
 
@@ -72,10 +69,6 @@ cbDiffSelectFiles::cbDiffSelectFiles(wxWindow* parent,wxWindowID id)
 	RBViewing = new wxRadioBox(this, ID_RADIOBOX1, _("Displaytype:"), wxDefaultPosition, wxDefaultSize, 3, __wxRadioBoxChoices_1, 1, wxRA_VERTICAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
 	RBViewing->SetSelection(0);
 	BoxSizer2->Add(RBViewing, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer4 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Language:"));
-	CHHLang = new wxChoice(this, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
-	StaticBoxSizer4->Add(CHHLang, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	BoxSizer2->Add(StaticBoxSizer4, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	BoxSizer1->Add(BoxSizer2, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StdDialogButtonSizer1 = new wxStdDialogButtonSizer();
 	StdDialogButtonSizer1->AddButton(new wxButton(this, wxID_OK, wxEmptyString));
@@ -89,21 +82,12 @@ cbDiffSelectFiles::cbDiffSelectFiles(wxWindow* parent,wxWindowID id)
 
 	Connect(ID_BSFROM,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&cbDiffSelectFiles::OnSelectFrom);
 	Connect(ID_BSTO,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&cbDiffSelectFiles::OnSelectTo);
-	Connect(ID_CHOICE1,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&cbDiffSelectFiles::OnHLangChange);
 	//*)
-
-    CHHLang->Append(cbDiffUtils::GetAllHighlightLanguages());
 
     ConfigManager *cfg = Manager::Get()->GetConfigManager(_T("cbdiffsettings"));
     if (cfg)
     {
         RBViewing->SetSelection(cfg->ReadInt(_T("viewmode"), 0));
-        CHHLang->SetStringSelection(cfg->Read(_T("hlang"), _("Plain Text")));
-        if(RBViewing->GetSelection() == 1)
-        {
-            CHHLang->Enable(false);
-            CHHLang->SetStringSelection(_("Diff/Patch"));
-        }
     }
 }
 
@@ -129,26 +113,6 @@ void cbDiffSelectFiles::OnSelectTo(wxCommandEvent& event)
     }
 }
 
-void cbDiffSelectFiles::OnRadioBox(wxCommandEvent& event)
-{
-    if(RBViewing->GetSelection() == 1)
-    {
-        m_lasthlang = CHHLang->GetStringSelection();
-        CHHLang->SetStringSelection(_("Diff/Patch"));
-        CHHLang->Disable();
-    }
-    else
-    {
-        CHHLang->Enable();
-        CHHLang->SetStringSelection(m_lasthlang);
-    }
-}
-
-void cbDiffSelectFiles::OnHLangChange(wxCommandEvent& event)
-{
-    m_lasthlang = event.GetString();
-}
-
 wxString cbDiffSelectFiles::GetFromFile()
 {
     return TCFromFile->GetValue();
@@ -164,7 +128,3 @@ int cbDiffSelectFiles::GetViewingMode()
     return RBViewing->GetSelection() + cbDiffEditor::TABLE;
 }
 
-wxString cbDiffSelectFiles::GetHighlightLanguage()
-{
-    return CHHLang->GetStringSelection();
-}

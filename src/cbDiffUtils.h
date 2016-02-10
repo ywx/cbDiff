@@ -17,7 +17,6 @@ namespace cbDiffUtils
     ProjectFile* IsFileInActiveProject(wxString filename);
     wxArrayString GetOpenFilesShort(wxString excludefile);
     wxArrayString GetOpenFilesLong(wxString excludefile);
-    wxArrayString GetAllHighlightLanguages();
     wxBitmap _wxGetBitmapFromMemory(const unsigned char *data, int length);
 }
 #endif // CBDIFFUTILS_H

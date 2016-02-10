@@ -24,8 +24,7 @@ END_EVENT_TABLE()
 
 cbDiffEditor::cbDiffEditor(const wxString& firstfile,
                            const wxString& secondfile,
-                           int viewmode,
-                           wxString hlang)
+                           int viewmode)
     : EditorBase((wxWindow*)Manager::Get()->GetEditorManager()->GetNotebook(),
                  firstfile + secondfile),
       m_diffctrl(0)
@@ -58,12 +57,13 @@ cbDiffEditor::cbDiffEditor(const wxString& firstfile,
         if(viewmode == DEFAULT)
         {
             viewmode = cfg->ReadInt(_T("viewmode"), 0) + TABLE;
-            hlang = cfg->Read(_T("hlang"), _("Plain Text"));
         }
     }
-    m_colorset.m_hlang = hlang;
+    HighlightLanguage hl = Manager::Get()->GetEditorManager()->GetColourSet()->GetLanguageForFilename(firstfile);
+    if (hl != HL_NONE)
+        m_colorset.m_hlang = Manager::Get()->GetEditorManager()->GetColourSet()->GetLanguageName(hl);
 
-    cbDiffToolbar* difftoolbar = new cbDiffToolbar(this, viewmode, hlang);
+    cbDiffToolbar* difftoolbar = new cbDiffToolbar(this, viewmode);
 
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxVERTICAL);
     BoxSizer->Add(difftoolbar, 0, wxALL|wxEXPAND|wxALIGN_CENTER, 0);
@@ -185,13 +185,6 @@ void cbDiffEditor::SetMode(int mode)
     m_diffctrl->Init(m_colorset);
     m_viewingmode = mode;
 }
-
-void cbDiffEditor::SetHlang(wxString lang)
-{
-    m_colorset.m_hlang = lang;
-    m_diffctrl->SetHlang(lang);
-}
-
 
 void cbDiffEditor::CloseAllEditors()
 {

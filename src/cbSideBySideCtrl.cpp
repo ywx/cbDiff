@@ -137,12 +137,6 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
     m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCRight);
 }
 
-void cbSideBySideCtrl::SetHlang(wxString lang)
-{
-    m_theme->Apply(m_theme->GetHighlightLanguage(lang), TCLeft);
-    m_theme->Apply(m_theme->GetHighlightLanguage(lang), TCRight);
-}
-
 void cbSideBySideCtrl::ShowDiff(wxDiff diff)
 {
     wxArrayInt right_added = diff.GetAddedLines();

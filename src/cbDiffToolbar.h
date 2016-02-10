@@ -12,27 +12,16 @@ class cbDiffEditor;
 class cbDiffToolbar : public wxPanel
 {
 public:
-    cbDiffToolbar(cbDiffEditor* parent, int viewmode, wxString hlang);
+    cbDiffToolbar(cbDiffEditor* parent, int viewmode);
     virtual ~cbDiffToolbar();
 protected:
 private:
-    /// IDs
-    enum
-    {
-        ID_BBRELOAD = 1545,
-        ID_BBSWAP,
-        ID_CHLANG
-    };
     cbDiffEditor* m_parent;
     wxBitmapButton* BBTable;
     wxBitmapButton* BBUnified;
     wxBitmapButton* BBSideBySide;
-    wxChoice* CHLang;
-
-    wxString m_lasthlang;
 
     void OnButton(wxCommandEvent& event);
-    void OnChoice(wxCommandEvent& event);
     DECLARE_EVENT_TABLE()
 };
 

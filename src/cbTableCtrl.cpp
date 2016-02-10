@@ -44,11 +44,6 @@ void cbTableCtrl::Init(cbDiffColors colset)
     m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), m_txtctrl);
 }
 
-void cbTableCtrl::SetHlang(wxString lang)
-{
-    m_theme->Apply(m_theme->GetHighlightLanguage(lang), m_txtctrl);
-}
-
 void cbTableCtrl::ShowDiff(wxDiff diff)
 {
     wxArrayInt right_added = diff.GetAddedLines();

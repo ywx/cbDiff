@@ -14,28 +14,36 @@
 #include "../images/unified.h"
 #include "../images/sidebyside.h"
 
+namespace {
 
+    /// IDs
+    const long int ID_BBRELOAD = wxNewId();
+    const long int ID_BBSWAP = wxNewId();
+    const long int ID_BUTTON_TABLE = wxNewId();
+    const long int ID_BUTTON_UNIFIED = wxNewId();
+    const long int ID_BUTTON_SIDEBYSIDE = wxNewId();
+
+};
 
 BEGIN_EVENT_TABLE(cbDiffToolbar, wxEvtHandler)
 END_EVENT_TABLE()
 
 cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent,
-                             int viewmode,
-                             wxString hlang)
+                             int viewmode)
                              : wxPanel(parent), m_parent(parent)
 {
-    BBTable = new wxBitmapButton(this, cbDiffEditor::TABLE,
+    BBTable = new wxBitmapButton(this, ID_BUTTON_TABLE,
                                  wxGetBitmapFromMemory(table),
                                  wxDefaultPosition,
                                  wxDefaultSize,
                                  wxBU_AUTODRAW);
     BBTable->SetToolTip(_("Display as a table"));
-    BBUnified = new wxBitmapButton(this, cbDiffEditor::UNIFIED,
+    BBUnified = new wxBitmapButton(this, ID_BUTTON_UNIFIED,
                                   wxGetBitmapFromMemory(unified),
                                   wxDefaultPosition,
                                   wxDefaultSize, wxBU_AUTODRAW);
     BBUnified->SetToolTip(_("Display as unified diff"));
-    BBSideBySide = new wxBitmapButton(this, cbDiffEditor::SIDEBYSIDE,
+    BBSideBySide = new wxBitmapButton(this, ID_BUTTON_SIDEBYSIDE,
                                wxGetBitmapFromMemory(sidebyside),
                                wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW);
     BBSideBySide->SetToolTip(_("Display side by side"));
@@ -51,13 +59,6 @@ cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent,
                                     wxBU_AUTODRAW);
     BBSwap->SetToolTip(_("Swap files"));
 
-    CHLang = new wxChoice(this, ID_CHLANG);
-    CHLang->Append(cbDiffUtils::GetAllHighlightLanguages());
-    if(hlang == wxEmptyString)
-        CHLang->SetStringSelection(_("Plain text"));
-    else
-        CHLang->SetStringSelection(hlang);
-
     wxBoxSizer* boxsizer = new wxBoxSizer(wxHORIZONTAL);
     boxsizer->Add(BBTable, 0, wxALL|wxALIGN_CENTER, 5);
     boxsizer->Add(BBUnified, 0, wxALL|wxALIGN_CENTER, 5);
@@ -66,7 +67,6 @@ cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent,
     boxsizer->Add(BBReload, 0, wxALL|wxALIGN_CENTER, 5);
     boxsizer->Add(BBSwap, 0, wxALL|wxALIGN_CENTER, 5);
     boxsizer->Add(-1,-1,0, wxALL|wxALIGN_CENTER, 5);
-    boxsizer->Add(CHLang, 0, wxALL|wxALIGN_CENTER, 5);
     SetSizer(boxsizer);
     boxsizer->Layout();
 
@@ -87,8 +87,6 @@ cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent,
 
     Connect(wxEVT_COMMAND_BUTTON_CLICKED,
             (wxObjectEventFunction)&cbDiffToolbar::OnButton);
-    Connect(wxEVT_COMMAND_CHOICE_SELECTED,
-            (wxObjectEventFunction)&cbDiffToolbar::OnChoice);
 }
 
 cbDiffToolbar::~cbDiffToolbar()
@@ -103,41 +101,40 @@ void cbDiffToolbar::OnButton(wxCommandEvent& event)
         m_parent->Swap();
         return;
     }
-    else if(event.GetId() != m_parent->GetMode() &&
-           (event.GetId() == cbDiffEditor::TABLE ||
-            event.GetId() == cbDiffEditor::UNIFIED ||
-            event.GetId() == cbDiffEditor::SIDEBYSIDE))
+    else
     {
-        BBTable->Enable();
-        BBUnified->Enable();
-        BBSideBySide->Enable();
-        CHLang->Enable();
-        CHLang->SetStringSelection(m_lasthlang);
-        m_parent->SetMode(event.GetId());
-        m_parent->SetHlang(m_lasthlang);
-        switch (event.GetId())
+        if (event.GetId() == ID_BUTTON_TABLE)
         {
-        case cbDiffEditor::TABLE:
-            BBTable->Enable(false);
-            break;
-        case cbDiffEditor::UNIFIED:
-            BBUnified->Enable(false);
-            m_lasthlang = CHLang->GetStringSelection();
-            CHLang->SetStringSelection(_T("Diff/Patch"));
-            CHLang->Disable();
-            break;
-        case cbDiffEditor::SIDEBYSIDE:
-            BBSideBySide->Enable(false);
-            break;
-        default:
-            break;
+            if ( m_parent->GetMode() != cbDiffEditor::TABLE)
+            {
+                m_parent->SetMode(cbDiffEditor::TABLE);
+                BBTable->Enable(false);
+		        BBUnified->Enable();
+		        BBSideBySide->Enable();
+            }
+        }
+        else if (event.GetId() == ID_BUTTON_UNIFIED)
+        {
+            if ( m_parent->GetMode() != cbDiffEditor::UNIFIED)
+            {
+                m_parent->SetMode(cbDiffEditor::UNIFIED);
+		        BBTable->Enable();
+                BBUnified->Enable(false);
+		        BBSideBySide->Enable();
+            }
+        }
+        else if (event.GetId() == ID_BUTTON_SIDEBYSIDE)
+        {
+            if ( m_parent->GetMode() != cbDiffEditor::SIDEBYSIDE)
+            {
+                m_parent->SetMode(cbDiffEditor::SIDEBYSIDE);
+		        BBTable->Enable();
+		        BBUnified->Enable();
+                BBSideBySide->Enable(false);
+            }
         }
     }
+
     m_parent->Reload();
 }
 
-void cbDiffToolbar::OnChoice(wxCommandEvent& event)
-{
-    m_lasthlang = event.GetString();
-    m_parent->SetHlang(event.GetString());
-}
