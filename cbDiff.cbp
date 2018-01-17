@@ -7,12 +7,13 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Unix">
-				<Option output="bin/cbDiff" prefix_auto="0" extension_auto="1" />
+				<Option output="bin/unix/debug/cbDiff" prefix_auto="0" extension_auto="1" />
+				<Option object_output=".objs/unix/debug" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option host_application="codeblocks" />
 				<Compiler>
-					<Add option="-ansi" />
+					<Add option="-std=c++11" />
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="`pkg-config --cflags codeblocks`" />
@@ -25,19 +26,19 @@
 					<Add option="`wx-config --libs`" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="zip -j9 bin/cbDiff.zip manifest.xml" />
-					<Add after="zip -j9 bin/cbDiff.cbplugin bin/cbDiff.so bin/cbDiff.zip" />
+					<Add after="zip -j9 $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).zip manifest.xml" />
+					<Add after="zip -j9 $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).cbplugin $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).zip" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Unix-release">
-				<Option output="bin/cbDiff" prefix_auto="0" extension_auto="1" />
-				<Option object_output=".objs/release" />
+				<Option output="bin/unix/release/cbDiff" prefix_auto="0" extension_auto="1" />
+				<Option object_output=".objs/unix/release" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option host_application="codeblocks" />
 				<Compiler>
-					<Add option="-ansi" />
+					<Add option="-std=c++11" />
 					<Add option="-Wall" />
 					<Add option="-O2" />
 					<Add option="`pkg-config --cflags codeblocks`" />
@@ -51,13 +52,14 @@
 					<Add option="`wx-config --libs`" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="zip -j9 bin/cbDiff.zip manifest.xml" />
-					<Add after="zip -j9 bin/cbDiff.cbplugin bin/cbDiff.so bin/cbDiff.zip" />
+					<Add after="zip -j9 $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).zip manifest.xml" />
+					<Add after="zip -j9 $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).cbplugin $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).zip" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Windows">
-				<Option output="bin/cbDiff" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/win/debug/cbDiff" prefix_auto="0" extension_auto="1" />
+				<Option object_output=".objs/win/debug" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option host_application="$(#cb)/devel/codeblocks.exe" />
@@ -69,6 +71,7 @@
 					<Add option="-fmessage-length=0" />
 					<Add option="-fexceptions" />
 					<Add option="-Winvalid-pch" />
+					<Add option="-std=gnu++11" />
 					<Add option="-DBUILDING_PLUGIN" />
 					<Add option="-DHAVE_W32API_H" />
 					<Add option="-D__WXMSW__" />
@@ -78,6 +81,7 @@
 					<Add option="-DwxUSE_UNICODE" />
 					<Add option="-DEXPORT_FUNC" />
 					<Add directory="$(#cb.include)" />
+					<Add directory="$(#cb)/include/tinyxml" />
 					<Add directory="$(#cb)\sdk\wxscintilla\include" />
 					<Add directory="$(#wx)\lib\gcc_dll\mswu" />
 					<Add directory="$(#wx.include)" />
@@ -87,19 +91,18 @@
 					<Add option="--enable-auto-import" />
 					<Add library="codeblocks" />
 					<Add library="wxmsw28u" />
-					<Add library="wxscintilla_cb" />
 					<Add directory="$(#cb)/devel" />
 					<Add directory="$(#wx.lib)/gcc_dll" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="zip -j9 bin/cbDiff.zip manifest.xml" />
-					<Add after="zip -j9 bin/cbDiff.cbplugin bin/cbDiff.dll bin/cbDiff.zip" />
+					<Add after="zip -j9 $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).zip manifest.xml" />
+					<Add after="zip -j9 $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).cbplugin $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).zip" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Windows-release">
-				<Option output="bin/cbDiff" prefix_auto="1" extension_auto="1" />
-				<Option object_output=".objs/Release" />
+				<Option output="bin/win/release/cbDiff" prefix_auto="0" extension_auto="1" />
+				<Option object_output=".objs/win/release" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option host_application="$(#cb)/devel/codeblocks.exe" />
@@ -111,15 +114,16 @@
 					<Add option="-fmessage-length=0" />
 					<Add option="-fexceptions" />
 					<Add option="-Winvalid-pch" />
+					<Add option="-std=gnu++11" />
 					<Add option="-DBUILDING_PLUGIN" />
 					<Add option="-DHAVE_W32API_H" />
 					<Add option="-D__WXMSW__" />
 					<Add option="-DWXUSINGDLL" />
-					<Add option="-DcbDEBUG" />
 					<Add option="-DCB_PRECOMP" />
 					<Add option="-DwxUSE_UNICODE" />
 					<Add option="-DEXPORT_FUNC" />
 					<Add directory="$(#cb.include)" />
+					<Add directory="$(#cb)/include/tinyxml" />
 					<Add directory="$(#cb)\sdk\wxscintilla\include" />
 					<Add directory="$(#wx)\lib\gcc_dll\mswu" />
 					<Add directory="$(#wx.include)" />
@@ -130,13 +134,12 @@
 					<Add option="--enable-auto-import" />
 					<Add library="codeblocks" />
 					<Add library="wxmsw28u" />
-					<Add library="wxscintilla_cb" />
 					<Add directory="$(#cb)/devel" />
 					<Add directory="$(#wx.lib)/gcc_dll" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="zip -j9 bin/cbDiff.zip manifest.xml" />
-					<Add after="zip -j9 bin/cbDiff.cbplugin bin/cbDiff.dll bin/cbDiff.zip" />
+					<Add after="zip -j9 $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).zip manifest.xml" />
+					<Add after="zip -j9 $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).cbplugin $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).zip" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>
