@@ -24,6 +24,22 @@ cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent,
                              wxString hlang)
                              : wxPanel(parent), m_parent(parent)
 {
+#if ( wxCHECK_VERSION(3, 0, 0) || isUseWxAuiToolbar || isUseWxToolbar )
+    // create some toolbars
+    #if isUseWxAuiToolbar
+    toolbar = new wxAuiToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE | wxAUI_TB_TEXT);
+    #else
+    toolbar = new wxToolBar(this, wxID_ANY);
+    #endif
+    toolbar->AddTool(cbDiffEditor::TABLE, wxT("Table"), wxGetBitmapFromMemory(table), wxT("Display as a table"), wxITEM_NORMAL);
+    toolbar->AddTool(cbDiffEditor::UNIFIED, wxT("Unified"), wxGetBitmapFromMemory(unified), wxT("Display as unified diff"), wxITEM_NORMAL);
+    toolbar->AddTool(cbDiffEditor::SIDEBYSIDE, wxT("Side by Side"), wxGetBitmapFromMemory(sidebyside), wxT("Display side by side"), wxITEM_NORMAL);
+    toolbar->AddSeparator();
+    toolbar->AddTool(ID_BBRELOAD, wxT("Reload"), wxGetBitmapFromMemory(reload), wxT("Reload files"), wxITEM_NORMAL);
+    toolbar->AddTool(ID_BBSWAP, wxT("Swap"), wxGetBitmapFromMemory(swap), wxT("Swap files"), wxITEM_NORMAL);
+    toolbar->AddSeparator();
+    CHLang = new wxChoice(toolbar, ID_CHLANG);
+#else
     BBTable = new wxBitmapButton(this, cbDiffEditor::TABLE,
                                  wxGetBitmapFromMemory(table),
                                  wxDefaultPosition,
@@ -52,6 +68,7 @@ cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent,
     BBSwap->SetToolTip(_("Swap files"));
 
     CHLang = new wxChoice(this, ID_CHLANG);
+#endif
     CHLang->Append(cbDiffUtils::GetAllHighlightLanguages());
     if(hlang == wxEmptyString)
         CHLang->SetStringSelection(_("Plain text"));
@@ -59,19 +76,42 @@ cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent,
         CHLang->SetStringSelection(hlang);
 
     wxBoxSizer* boxsizer = new wxBoxSizer(wxHORIZONTAL);
-    boxsizer->Add(BBTable, 0, wxALL|wxALIGN_CENTER, 5);
-    boxsizer->Add(BBUnified, 0, wxALL|wxALIGN_CENTER, 5);
-    boxsizer->Add(BBSideBySide, 0, wxALL|wxALIGN_CENTER, 5);
-    boxsizer->Add(-1,-1,0, wxALL|wxALIGN_CENTER, 5);
-    boxsizer->Add(BBReload, 0, wxALL|wxALIGN_CENTER, 5);
-    boxsizer->Add(BBSwap, 0, wxALL|wxALIGN_CENTER, 5);
-    boxsizer->Add(-1,-1,0, wxALL|wxALIGN_CENTER, 5);
-    boxsizer->Add(CHLang, 0, wxALL|wxALIGN_CENTER, 5);
+#if ( wxCHECK_VERSION(3, 0, 0) || isUseWxAuiToolbar || isUseWxToolbar )
+    toolbar->AddControl(CHLang);
+    // after adding the buttons to the toolbar, must call Realize() to reflect
+    // the changes
+    #if ( wxCHECK_VERSION(3, 0, 0) && isUseWxAuiToolbar && !defined(_WIN32) )
+    toolbar->SetInitialSize();
+    #endif
+    toolbar->Realize();
+    #if ! isUseWxAuiToolbar
+    toolbar->SetInitialSize();
+    #endif
+
+    boxsizer->Add(toolbar, 0, wxALL|wxEXPAND, 5);
+    SetSizer(boxsizer);
+#else
+    boxsizer->Add(BBTable, 0, wxALL, 5);
+    boxsizer->Add(BBUnified, 0, wxALL, 5);
+    boxsizer->Add(BBSideBySide, 0, wxALL, 5);
+    boxsizer->Add(-1,-1,0, wxALL, 5);
+    boxsizer->Add(BBReload, 0, wxALL, 5);
+    boxsizer->Add(BBSwap, 0, wxALL, 5);
+    boxsizer->Add(-1,-1,0, wxALL, 5);
+    boxsizer->Add(CHLang, 0, wxALL, 5);
     SetSizer(boxsizer);
     boxsizer->Layout();
+#endif
 
     switch (viewmode)
     {
+#if ( wxCHECK_VERSION(3, 0, 0) || isUseWxAuiToolbar || isUseWxToolbar )
+    case cbDiffEditor::TABLE:
+    case cbDiffEditor::UNIFIED:
+    case cbDiffEditor::SIDEBYSIDE:
+        toolbar->EnableTool(viewmode, false);
+        break;
+#else
     case cbDiffEditor::TABLE:
         BBTable->Enable(false);
         break;
@@ -81,12 +121,18 @@ cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent,
     case cbDiffEditor::SIDEBYSIDE:
         BBSideBySide->Enable(false);
         break;
+#endif
     default:
         break;
     }
 
+#if ( wxCHECK_VERSION(3, 0, 0) || isUseWxAuiToolbar || isUseWxToolbar )
+    Connect(wxEVT_COMMAND_TOOL_CLICKED,
+            (wxObjectEventFunction)&cbDiffToolbar::OnButton);
+#else
     Connect(wxEVT_COMMAND_BUTTON_CLICKED,
             (wxObjectEventFunction)&cbDiffToolbar::OnButton);
+#endif
     Connect(wxEVT_COMMAND_CHOICE_SELECTED,
             (wxObjectEventFunction)&cbDiffToolbar::OnChoice);
 }
@@ -108,9 +154,15 @@ void cbDiffToolbar::OnButton(wxCommandEvent& event)
             event.GetId() == cbDiffEditor::UNIFIED ||
             event.GetId() == cbDiffEditor::SIDEBYSIDE))
     {
+#if ( wxCHECK_VERSION(3, 0, 0) || isUseWxAuiToolbar || isUseWxToolbar )
+        toolbar->EnableTool(cbDiffEditor::TABLE, true);
+        toolbar->EnableTool(cbDiffEditor::UNIFIED, true);
+        toolbar->EnableTool(cbDiffEditor::SIDEBYSIDE, true);
+#else
         BBTable->Enable();
         BBUnified->Enable();
         BBSideBySide->Enable();
+#endif
         CHLang->Enable();
         CHLang->SetStringSelection(m_lasthlang);
         m_parent->SetMode(event.GetId());
@@ -118,16 +170,28 @@ void cbDiffToolbar::OnButton(wxCommandEvent& event)
         switch (event.GetId())
         {
         case cbDiffEditor::TABLE:
+#if ( wxCHECK_VERSION(3, 0, 0) || isUseWxAuiToolbar || isUseWxToolbar )
+            toolbar->EnableTool(cbDiffEditor::TABLE, false);
+#else
             BBTable->Enable(false);
+#endif
             break;
         case cbDiffEditor::UNIFIED:
+#if ( wxCHECK_VERSION(3, 0, 0) || isUseWxAuiToolbar || isUseWxToolbar )
+            toolbar->EnableTool(cbDiffEditor::UNIFIED, false);
+#else
             BBUnified->Enable(false);
+#endif
             m_lasthlang = CHLang->GetStringSelection();
             CHLang->SetStringSelection(_T("Diff/Patch"));
             CHLang->Disable();
             break;
         case cbDiffEditor::SIDEBYSIDE:
+#if ( wxCHECK_VERSION(3, 0, 0) || isUseWxAuiToolbar || isUseWxToolbar )
+            toolbar->EnableTool(cbDiffEditor::SIDEBYSIDE, false);
+#else
             BBSideBySide->Enable(false);
+#endif
             break;
         default:
             break;

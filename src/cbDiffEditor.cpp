@@ -74,7 +74,7 @@ cbDiffEditor::cbDiffEditor(const wxString& firstfile,
 
     ShowDiff();
 
-    difftoolbar->Layout();
+    // difftoolbar->Layout();
     m_diffctrl->Layout();
     BoxSizer->Layout();
     Layout();

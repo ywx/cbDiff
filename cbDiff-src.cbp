@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="cbDiff src release" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="src-release">
+				<Option output="cbDiff" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<ExtraCommands>
+					<Add after="zip -r9 cbDiff_1.01.1-src.zip src/*" />
+					<Add after="zip -r9 cbDiff_1.01.1-src.zip wxsmith/*" />
+					<Add after="zip -r9 cbDiff_1.01.1-src.zip dtl-1.12/*" />
+					<Add after="zip -r9 cbDiff_1.01.1-src.zip images/*" />
+					<Add after="zip -j9 cbDiff_1.01.1-src.zip cbDiff.cbp" />
+					<Add after="zip -j9 cbDiff_1.01.1-src.zip cbDiff-unix.cbp" />
+					<Add after="zip -j9 cbDiff_1.01.1-src.zip cbDiff-src.cbp" />
+					<Add after="zip -j9 cbDiff_1.01.1-src.zip COPYING" />
+					<Add after="zip -j9 cbDiff_1.01.1-src.zip manifest.xml" />
+					<Add after="zip -j9 cbDiff_1.01.1-src.zip README" />
+					<Mode after="always" />
+				</ExtraCommands>
+			</Target>
+		</Build>
+	</Project>
+</CodeBlocks_project_file>

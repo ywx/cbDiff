@@ -58,8 +58,10 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile) : wxMenu()
 
 cbDiffMenu::~cbDiffMenu()
 {
-    Destroy(FindItem(_("Project files")));
-    Destroy(FindItem(_("Open files")));
+    int id = FindItem(_("Project files"));
+    if( id != wxNOT_FOUND ) Destroy(id);
+    id = FindItem(_("Open files"));
+    if( id != wxNOT_FOUND ) Destroy(id);
 }
 
 void cbDiffMenu::OnSelect(wxCommandEvent& event)
